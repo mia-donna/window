@@ -23,6 +23,11 @@ randomAmount = do
     r <- randomRIO (10, 50)
     return r
 
+randomCustomer :: IO Int 
+randomCustomer = do
+    r <- randomRIO (1, 3)
+    return r
+
 {-transfer :: Customer -> Customer -> Int -> IO (Customer, Customer)
 transfer from to amount
   | balance from < amount = return (from, to)
@@ -31,6 +36,7 @@ transfer from to amount
 process :: Name -> MVar Value -> MVar Value -> MVar Value -> MVar Balance -> MVar Balance -> MVar Balance -> IO ()
 process name value1 value2 value3 balance1 balance2 balance3 = do
     putStrLn $ name ++ "'s turn"
+    
     
     r1 <- randomAmount
 
@@ -45,14 +51,29 @@ process name value1 value2 value3 balance1 balance2 balance3 = do
     putMVar value3 r3
 
 -- transfer tests
+    random <- randomCustomer
+    if random == 1 then do
+        number <- takeMVar balance1
+        let newnumber = number + 10
+        putMVar balance1 newnumber
+    else if random == 2 then do
+        number <- takeMVar balance2
+        let newnumber = number + 20
+        putMVar balance2 newnumber
+     else do  
+        number <- takeMVar balance3
+        let newnumber = number + 30
+        putMVar balance3 newnumber
+            
 
-    putMVar balance1 50
-    putMVar balance2 1000
-    putMVar balance3 1000
+    
 
 -- random number selector 1-3
 -- if they get 1, transfer into first balance pot, 
     -- if they get 2, transfer into second balance pot etc
+        -- run this 10x? or 100x? then print out at the end
+    
+
 
 
 
