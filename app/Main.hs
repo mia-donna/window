@@ -5,6 +5,7 @@ module Main where
 
 import Control.Concurrent ( threadDelay, forkIO , takeMVar , putMVar , newEmptyMVar , MVar , newMVar , readMVar )
 import System.Random
+import Control.Monad (replicateM_)
 
 data Customer = Customer {
   name :: Name,
@@ -37,18 +38,6 @@ process :: Name -> MVar Value -> MVar Value -> MVar Value -> MVar Balance -> MVa
 process name value1 value2 value3 balance1 balance2 balance3 = do
     putStrLn $ name ++ "'s turn"
     
-    
-    r1 <- randomAmount
-
-    putMVar value1 r1
-    
-    r2 <- randomAmount
-
-    putMVar value2 r2
-
-    r3 <- randomAmount
-
-    putMVar value3 r3
 
 -- transfer tests
     random <- randomCustomer
@@ -93,21 +82,22 @@ main = do
     value2 <- newEmptyMVar
     value3 <- newEmptyMVar
 
+    
+    replicateM_ 3 (mapM_ forkIO [process "C1" value1 value2 value3 balance1 balance2 balance3, process "C2" value1 value2 value3 balance1 balance2 balance3, process "C3" value1 value2 value3 balance1 balance2 balance3])
 
-    mapM_ forkIO [process "C1" value1 value2 value3 balance1 balance2 balance3, process "C2" value1 value2 value3 balance1 balance2 balance3, process "C3" value1 value2 value3 balance1 balance2 balance3]
-
+{-
     one <- readMVar value1
     two <- readMVar value2
-    three <- readMVar value3
+    three <- readMVar value3 -}
 
     bal1 <- takeMVar balance1
-    print bal1
+    putStrLn $ "this is customer 1" ++ show bal1
     
     bal2 <- takeMVar balance2
-    print bal2
+    putStrLn $ "this is customer 2" ++ show bal2
 
     bal3 <- takeMVar balance3
-    print bal3
+    putStrLn $ "this is customer 3" ++ show bal3
 
     
     --putStrLn $ show one
